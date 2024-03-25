@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
+  Alert,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Stack, useLocalSearchParams } from 'expo-router';
@@ -15,6 +16,11 @@ import {
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
 import Colors from '@/constants/Colors';
+import {
+  isClerkAPIResponseError,
+  useSignIn,
+  useSignUp,
+} from '@clerk/clerk-expo';
 
 const CELL_COUNT = 6;
 
@@ -29,6 +35,8 @@ const Page = () => {
     value: code,
     setValue: setCode,
   });
+  const { signUp, setActive } = useSignUp();
+  const { signIn } = useSignIn();
 
   useEffect(() => {
     if (code.length === 6) {
@@ -37,9 +45,62 @@ const Page = () => {
     }
   }, [code]);
 
-  const verifyCode = async () => {};
-  const verifySignIn = async () => {};
-  const resendCode = async () => {};
+  const verifyCode = async () => {
+    try {
+      const result = await signUp!.attemptPhoneNumberVerification({ code });
+
+      await setActive!({ session: signUp!.createdSessionId });
+    } catch (err) {
+      if (isClerkAPIResponseError(err)) {
+        Alert.alert('Error', err.errors[0].message);
+      }
+    }
+  };
+
+  const verifySignIn = async () => {
+    try {
+      await signIn!.attemptFirstFactor({
+        strategy: 'phone_code',
+        code,
+      });
+
+      await setActive!({ session: signIn!.createdSessionId });
+    } catch (err) {
+      if (isClerkAPIResponseError(err)) {
+        Alert.alert('Error', err.errors[0].message);
+      }
+    }
+  };
+
+  const resendCode = async () => {
+    try {
+      if (signin === 'true') {
+        const { supportedFirstFactors } = await signIn!.create({
+          identifier: phone,
+        });
+
+        const firstPhoneFactor: any = supportedFirstFactors.find(
+          (factor: any) => {
+            return factor.strategy === 'phone_code';
+          },
+        );
+
+        const { phoneNumberId } = firstPhoneFactor;
+
+        await signIn!.prepareFirstFactor({
+          strategy: 'phone_code',
+          phoneNumberId,
+        });
+      } else {
+        await signUp!.create({ phoneNumber: phone });
+        signUp!.preparePhoneNumberVerification();
+      }
+    } catch (error) {
+      if (isClerkAPIResponseError(error)) {
+        Alert.alert('Error', error.errors[0].message);
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>
