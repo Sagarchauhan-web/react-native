@@ -91,6 +91,12 @@ const InitialLayout = () => {
           headerTitleAlign: 'center',
         }}
       />
+      <Stack.Screen
+        name='(tabs)'
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 };
