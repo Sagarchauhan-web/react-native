@@ -10,6 +10,9 @@ const Layout = () => {
         screenOptions={{
           tabBarStyle: {
             backgroundColor: Colors.background,
+            paddingBottom: 10,
+            paddingTop: 10,
+            height: 60,
           },
           tabBarActiveTintColor: Colors.primary,
           tabBarInactiveBackgroundColor: Colors.background,
@@ -18,6 +21,7 @@ const Layout = () => {
             backgroundColor: Colors.background,
           },
           headerShadowVisible: false,
+          headerTitleAlign: 'center',
         }}
       >
         <Tabs.Screen
@@ -60,6 +64,7 @@ const Layout = () => {
           name='settings'
           options={{
             title: 'Settings',
+            headerShown: false,
             tabBarIcon: ({ size, color }) => (
               <MaterialIcons name='settings' size={size} color={color} />
             ),

@@ -15,7 +15,8 @@ export const defaultStyles = StyleSheet.create({
     gap: 10,
   },
   separator: {
-    height: StyleSheet.hairlineWidth,
+    height: 1,
+    opacity: 0.5,
     backgroundColor: Colors.lightGray,
     marginLeft: 50,
   },
