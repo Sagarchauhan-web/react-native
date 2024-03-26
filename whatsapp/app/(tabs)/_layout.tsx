@@ -45,6 +45,7 @@ const Layout = () => {
         <Tabs.Screen
           name='calls'
           options={{
+            headerShown: false,
             title: 'Calls',
             tabBarIcon: ({ size, color }) => (
               <MaterialIcons name='call' size={size} color={color} />
